@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>DreamMat: High-quality PBR Material Generation with Geometry- and Light-aware Diffusion Models</title>
+    <!-- Bootstrap -->
+    <link href="./static/css/bootstrap-4.4.1.css" rel="stylesheet">
+    <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+    <!-- <link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,800italic,400,700,800' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="css/project.css" media="screen" />
+    <link rel="stylesheet" type="text/css" media="screen" href="css/iconize.css" />
+    <script src="js/google-code-prettify/prettify.js"></script> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="./static/js/bulma-carousel.min.js"></script>
+    <script src="./static/js/bulma-slider.min.js"></script>
+    <script src="./static/js/index.js"></script>
+  </head>
+
+  <!-- cover -->
+  <body><section>
+    <div class="jumbotron text-center mt-0">
+      <div class="container">
+        <div class="row">
+          <div class="col-12">
+            <h2><font color="#FF0000">D</font><font color="#E1001E">r</font><font color="#D2002D">e</font><font color="#C3003C">a</font><font color="#A5005A">m</font><font color="#960069">M</font><font color="#780087">a</font><font color="#5A00A5">t</font>: High-quality PBR Material Generation <br> with Geometry- and Light-aware Diffusion Models
+            </h2>
+            <h4 style="color:#5a6268;">SIGGRAPH 2024 (ACM TOG)</h4>
+            <hr>
+            <h6>
+                <a href="https://zzzyuqing.github.io/" target="_blank">Yuqing Zhang</a><sup>1*</sup>,
+                <a href="https://liuyuan-pal.github.io/" target="_blank">Yuan Liu</a><sup>2,3*</sup>,
+                Zhiyu Xie<sup>1</sup>,
+                Lei Yang<sup>3</sup>,
+                Zhongyuan Liu<sup>3</sup>,
+                Mengzhou Yang<sup>3</sup>,
+                Runze Zhang<sup>3</sup>,
+                Qilong Kou<sup>3</sup>,
+                <a href="https://clinplayer.github.io/" target="_blank">Chen Lin</a><sup>3</sup>,
+                <a href="https://engineering.tamu.edu/cse/profiles/Wang-Wenping.html" target="_blank">Wenping Wang</a><sup>4</sup>
+                <a href="http://www.cad.zju.edu.cn/home/jin/" target="_blank">Xiaogang Jin</a><sup>1†</sup></h6>
+            <p>
+                <sup>1</sup>State Key Lab of CAD&CG, Zhejiang University &nbsp;&nbsp;
+                <sup>2</sup>The University of Hong Kong&nbsp;&nbsp;&nbsp;&nbsp;
+                <sup>3</sup>Tencent Games&nbsp;&nbsp;&nbsp;&nbsp;
+                <sup>4</sup>Texas A&amp;M University
+                <br>
+                <sup>*</sup>The first two authors contribute equally. &nbsp;&nbsp;
+                <sup>†</sup>Corresponding authors. &nbsp;&nbsp;
+            </p>
+
+            <div class="row justify-content-center">
+              <div class="column">
+                  <p class="mb-5"><a class="btn btn-large btn-light" href="https://arxiv.org" role="button" target="_blank">
+                    <i class="fa fa-file"></i> Paper</a> </p>
+              </div>
+              <div class="column">
+                  <p class="mb-5"><a class="btn btn-large btn-light" href="https://github.com" role="button" target="_blank">
+                    <i class="fa fa-github-alt"></i> Code </a> </p>
+              </div>
+              <div class="column">
+                <p class="mb-5"><a class="btn btn-large btn-light" href="https://www.youtube.com/" role="button" target="_blank">
+                  <i class="fa fa-github-alt"></i> Video </a> </p>
+            </div>
+              <div class="column">
+                  <p class="mb-5"><a class="btn btn-large btn-light" href="dreammat.github.io" role="button" target="_blank">
+                    <i class="fa fa-database"></i> Model &amp; Dataset </a> </p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- abstract -->
+  <section>
+    <div class="container">
+      <div class="row">
+        <div class="col-12 text-center">
+          <h3>Abstract</h3>
+            <hr style="margin-top:0px">
+            <h6 style="color:#8899a5"> DreamMat is able to generate PBR materials for 3D meshes using text prompts. </h6>
+<!--            <div align="center"> For an unseen objects, we can simply take. </div>-->
+
+            <div class="row" style="margin-bottom:5px">
+              <div class="col" style="text-align:center">
+                <img class="thumbnail" src="./static/images/teaser.png" style="width:100%; margin-bottom:20px">
+              </div>
+
+            </div>
+			<br>
+
+          <p class="text-left">
+            Recent advancements in 2D diffusion models allow appearance generation on untextured raw meshes. These methods create RGB textures by distilling a 2D diffusion model, which often contains unwanted baked-in shading effects and results in unrealistic rendering effects in the downstream applications. Generating Physically Based Rendering (PBR) materials instead of just RGB textures would be a promising solution. However, directly distilling the PBR material parameters from 2D diffusion models still suffers from incorrect material decomposition, such as baked-in shading effects in albedo. We introduce DreamMat, an innovative approach to resolve the aforementioned problem, to generate high-quality PBR materials from text descriptions. We find out that the main reason for the incorrect material distillation is that large-scale 2D diffusion models are only trained to generate final shading colors, resulting in insufficient constraints on material decomposition during distillation. To tackle this problem, we first finetune a new light-aware 2D diffusion model to condition on a given lighting environment and generate the shading results on this specific lighting condition. Then, by applying the same environment lights in the material distillation, DreamMat can generate high-quality PBR materials that are not only consistent with the given geometry but also free from any baked-in shading effects in albedo. Extensive experiments demonstrate that the materials produced through our methods exhibit greater visual appeal to users and achieve significantly superior rendering quality compared to baseline methods, which are preferable for downstream tasks such as game and film production.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <br>
+
+  <!-- results -->
+  <section>
+    <div class="container">
+      <div class="row">
+        <div class="col-12 text-center">
+            <h2>Generated PBR materials and relighting results</h2>
+            <hr style="margin-top:0px">
+            <video width="100%" playsinline="" autoplay="autoplay" loop="loop" preload="" muted="">
+                <source src="./static/videos/results.mp4" type="video/mp4">
+            </video>
+            <p class="text-left">
+              The input text prompts are "A red apple", "A cute striped kitten", "A vintage-style green sewing machine with golden buttons", "A wooden stool", "The earth", "A vintage rotary telephone with red base and brass handset", "A blue pleated plaid skirt" and "A cupcake with marshmallow and chocolate drizzle topping".
+          <p class="text-left">
+        </div>
+      </div>
+    </div>
+  </section>
+  <br>
+
+  <!-- pipeline -->
+  <section>
+    <div class="container">
+      <div class="row">
+        <div class="col-12 text-center">
+          <h3>Pipeline</h3>
+            <hr style="margin-top:0px">
+<!--            <div align="center"> For an unseen objects, we can simply take. </div>-->
+
+            <div class="row" style="margin-bottom:5px">
+              <div class="col" style="text-align:center">
+                <img class="thumbnail" src="./static/images/pipeline.png" style="width:100%; margin-bottom:20px">
+              </div>
+
+            </div>
+			<br>
+
+          <p class="text-left">
+            DreamMat distills a diffusion model to generate PBR materials. We first use Monte Carlo sampling to render images of the object from its material representation and a randomly-selected predefined environment light. Then, we train the material representation by CSD loss on rendered images using a geometry- and light-aware diffusion model.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <br>
+
+  <!-- controlnet -->
+  <section>
+    <div class="container">
+      <div class="row">
+        <div class="col-12 text-center">
+          <h3>Geometry- and Light-aware Diffusion Model</h3>
+            <hr style="margin-top:0px">
+<!--            <div align="center"> For an unseen objects, we can simply take. </div>-->
+
+            <div class="row" style="margin-bottom:5px">
+              <div class="col" style="text-align:center">
+                <img class="thumbnail" src="./static/images/pipeline_controlnet.png" style="width:100%; margin-bottom:20px">
+                
+              </div>
+
+            </div>
+			<br>
+
+          <p class="text-left">
+            Our geometry- and light-aware diffusion model uses an object's normal and depth maps as geometry conditions and six predefined materials with a given environment light as lighting conditions. Our model generates images that align with the given geometry and environment light.
+          </p>
+          <div class="row" style="margin-bottom:5px">
+            <div class="col" style="text-align:center">
+              <img class="thumbnail" src="./static/images/controlnet.png" style="width:100%; margin-bottom:20px">
+            </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <br>
+
+
+ <!-- complex -->
+  <section>
+    <div class="container">
+      <div class="row">
+        <div class="col-12 text-center">
+            <h2>Material Generation of Complex Objects</h2>
+            <hr style="margin-top:0px">
+            <video width="100%" playsinline="" autoplay="autoplay" loop="loop" preload="" muted="">
+                <source src="./static/videos/complex.mp4" type="video/mp4">
+            </video>
+
+          <p class="text-left">
+
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <br>
+
+  <!-- diverse -->
+  <section>
+    <div class="container">
+      <div class="row">
+        <div class="col-12 text-center">
+            <h2>Generating Diverse Materials</h2>
+            <hr style="margin-top:0px">
+            <video width="100%" playsinline="" autoplay="autoplay" loop="loop" preload="" muted="">
+                <source src="./static/videos/diverse.mp4" type="video/mp4">
+            </video>
+
+          <p class="text-left">
+
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <br>
+
+  <!-- diverse -->
+  <section>
+    <div class="container">
+      <div class="row">
+        <div class="col-12 text-center">
+            <h2>Material Generation for Object Sets</h2>
+            <hr style="margin-top:0px">
+            <video width="100%" playsinline="" autoplay="autoplay" loop="loop" preload="" muted="">
+                <source src="./static/videos/scene.mp4" type="video/mp4">
+            </video>
+            <p class="text-left">
+              For a cluttered scene or a highly-detailed avatar, we generate materials for each component separately and then combine these parts together to render the appearances in Blender.
+          <p class="text-left">
+
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <br>
+
+  <!-- citing -->
+  <div class="container">
+    <div class="row ">
+      <div class="col-12">
+          <h3>Citation</h3>
+          <hr style="margin-top:0px">
+              <pre style="background-color: #e9eeef;padding: 1.25em 1.5em"><code>@inproceedings{zhang2024dreammat,
+  title={DreamMat: High-quality PBR Material Generation with Geometry- and Light-aware Diffusion Models},
+  author={Zhang, Yuqing and Liu, Yuan and Xie, Zhiyu and Yang, Lei and Liu, Zhongyuan and Yang, Mengzhou and Zhang, Runze and Kou, Qilong and and Lin, Cheng and Wang, Wenping and Jin, Xiaogang},
+  booktitle={SIGGRAPH},
+  year={2024}
+}</code></pre>
+          <hr>
+      </div>
+    </div>
+  </div>
+
+
+
+
+</body></html>
